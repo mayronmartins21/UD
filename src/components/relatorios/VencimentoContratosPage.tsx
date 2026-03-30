@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Filter, Download, ChevronDown, ChevronRight, X } from 'lucide-react';
+import { Filter, ChevronDown, ChevronRight, X } from 'lucide-react';
 import type { VencimentoContrato, VencimentoResumo } from '../../types/vencimentoContratos';
 import { gerarContratosVencimento, gerarResumoGrupos } from '../../data/vencimentoContratosMockData';
 
@@ -20,7 +20,6 @@ export const VencimentoContratosPage: React.FC = () => {
   const [resumoGrupos, setResumoGrupos] = useState<VencimentoResumo[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
-  const [showExportMenu, setShowExportMenu] = useState(false);
 
   useEffect(() => {
     const contratosGerados = gerarContratosVencimento();
@@ -117,10 +116,7 @@ export const VencimentoContratosPage: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Vencimento de Contratos</h1>
-        <p className="text-sm text-gray-600">
-          Visualize os contratos de Saque Fácil que estão próximos da quitação integral, permitindo identificar liberações de margem e oportunidades de nova oferta.
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900">Vencimento de Contratos</h1>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -173,23 +169,6 @@ export const VencimentoContratosPage: React.FC = () => {
               >
                 Limpar
               </button>
-            </div>
-
-            <div className="relative ml-auto">
-              <button
-                onClick={() => setShowExportMenu(!showExportMenu)}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Exportar
-              </button>
-              {showExportMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
-                  <button className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm">Exportar CSV</button>
-                  <button className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm">Exportar XLSX</button>
-                  <button className="w-full px-4 py-2 text-left hover:bg-gray-50 text-sm">Exportar PDF</button>
-                </div>
-              )}
             </div>
           </div>
         </div>
