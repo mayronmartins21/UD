@@ -3,6 +3,10 @@ import { Filter, ChevronDown, ChevronRight, X } from 'lucide-react';
 import type { VencimentoContrato, VencimentoResumo } from '../../types/vencimentoContratos';
 import { gerarContratosVencimento, gerarResumoGrupos } from '../../data/vencimentoContratosMockData';
 
+interface VencimentoContratosPageProps {
+  onNavigateToServidor?: (cpf: string) => void;
+}
+
 const convenios = [
   'Prefeitura de Guarulhos',
   'Prefeitura de Hortolândia',
@@ -13,7 +17,7 @@ const convenios = [
   'Prefeitura de São Gonçalo'
 ];
 
-export const VencimentoContratosPage: React.FC = () => {
+export const VencimentoContratosPage: React.FC<VencimentoContratosPageProps> = ({ onNavigateToServidor }) => {
   const [selectedConvenios, setSelectedConvenios] = useState<string[]>([]);
   const [contratos, setContratos] = useState<VencimentoContrato[]>([]);
   const [contratosFiltrados, setContratosFiltrados] = useState<VencimentoContrato[]>([]);
@@ -80,6 +84,12 @@ export const VencimentoContratosPage: React.FC = () => {
     return date.toLocaleDateString('pt-BR');
   };
 
+  const formatMonthYear = (date: Date) => {
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${year}`;
+  };
+
   const getStatusBadge = (status: 'alta' | 'media' | 'baixa') => {
     const configs = {
       alta: 'bg-green-100 text-green-700',
@@ -111,6 +121,12 @@ export const VencimentoContratosPage: React.FC = () => {
     if (!faixaVencimento) return [];
 
     return contratosFiltrados.filter(c => c.faixaVencimento === faixaVencimento);
+  };
+
+  const handleRowDoubleClick = (cpf: string) => {
+    if (onNavigateToServidor) {
+      onNavigateToServidor(cpf);
+    }
   };
 
   return (
@@ -241,13 +257,17 @@ export const VencimentoContratosPage: React.FC = () => {
                                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Matrícula</th>
                                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Valor de Parcela</th>
                                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Prazo</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Parcelas Liquidadas</th>
+                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Parcela Atual</th>
                                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vencimento</th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
                                       {contratosDeste.map((contrato) => (
-                                        <tr key={contrato.id} className="hover:bg-gray-50 transition-colors">
+                                        <tr
+                                          key={contrato.id}
+                                          className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                          onDoubleClick={() => handleRowDoubleClick(contrato.cpf)}
+                                        >
                                           <td className="px-3 py-2 text-xs text-gray-900">{contrato.convenio.replace('Prefeitura de ', 'Pref. ')}</td>
                                           <td className="px-3 py-2 text-xs text-blue-600 font-medium">{contrato.numeroProposta}</td>
                                           <td className="px-3 py-2 text-xs text-gray-900">{contrato.nomeServidor}</td>
@@ -256,7 +276,7 @@ export const VencimentoContratosPage: React.FC = () => {
                                           <td className="px-3 py-2 text-xs text-gray-900">{formatCurrency(contrato.valorParcela)}</td>
                                           <td className="px-3 py-2 text-xs text-gray-600">{contrato.qtdeTotalParcelas}x</td>
                                           <td className="px-3 py-2 text-xs text-green-600 font-medium">{contrato.qtdeParcelasLiquidadas}x</td>
-                                          <td className="px-3 py-2 text-xs text-gray-600">{formatDate(contrato.vencimentoUltimaParcela)}</td>
+                                          <td className="px-3 py-2 text-xs text-gray-600">{formatMonthYear(contrato.vencimentoUltimaParcela)}</td>
                                         </tr>
                                       ))}
                                     </tbody>

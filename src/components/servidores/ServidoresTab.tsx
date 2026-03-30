@@ -1,15 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, ChevronLeft, ChevronRight, ArrowLeft, FileSpreadsheet } from 'lucide-react';
 import { ServidoresTable } from './ServidoresTable';
 import { ServidorDetalhesPage } from './ServidorDetalhesPage';
 import { servidoresMock } from '../../data/servidoresMockData';
 import type { ServidorCompleto } from '../../types/servidores';
 
-export const ServidoresTab: React.FC = () => {
+interface ServidoresTabProps {
+  cpfInicial?: string | null;
+}
+
+export const ServidoresTab: React.FC<ServidoresTabProps> = ({ cpfInicial }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [servidorSelecionado, setServidorSelecionado] = useState<ServidorCompleto | null>(null);
   const itemsPerPage = 20;
+
+  useEffect(() => {
+    if (cpfInicial) {
+      const servidor = servidoresMock.find(s => s.cpf === cpfInicial);
+      if (servidor) {
+        setServidorSelecionado(servidor);
+      }
+    }
+  }, [cpfInicial]);
 
   const servidoresFiltrados = useMemo(() => {
     return servidoresMock.filter(servidor => {

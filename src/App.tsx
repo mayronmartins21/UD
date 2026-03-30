@@ -38,6 +38,7 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [propostaEmAndamento, setPropostaEmAndamento] = useState(false);
   const [abaDesejada, setAbaDesejada] = useState<string | null>(null);
+  const [servidorSelecionadoCpf, setServidorSelecionadoCpf] = useState<string | null>(null);
 
   const menuGroups: MenuGroup[] = [
     {
@@ -151,6 +152,11 @@ function App() {
     setAbaDesejada(null);
   };
 
+  const handleNavigateToServidor = (cpf: string) => {
+    setServidorSelecionadoCpf(cpf);
+    setActiveTab('servidores');
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'dashboard-geral':
@@ -175,13 +181,13 @@ function App() {
       case 'antecipacoes':
         return <AntecipacaoQuitacaoTab />;
       case 'servidores':
-        return <ServidoresTab />;
+        return <ServidoresTab cpfInicial={servidorSelecionadoCpf} />;
       case 'convenios':
         return <ConveniosTab />;
       case 'processadoras':
         return <ProcessadorasTab />;
       case 'vencimento-contratos':
-        return <VencimentoContratosPage />;
+        return <VencimentoContratosPage onNavigateToServidor={handleNavigateToServidor} />;
       default:
         return <DashboardTab />;
     }
