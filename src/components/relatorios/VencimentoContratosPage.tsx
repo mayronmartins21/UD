@@ -235,21 +235,14 @@ export const VencimentoContratosPage: React.FC = () => {
                                     <thead className="bg-gray-100 border-b border-gray-200">
                                       <tr>
                                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Convênio</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Proposta</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Contrato</th>
+                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nº da Proposta</th>
+                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nome</th>
                                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">CPF</th>
                                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Matrícula</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nome</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Categoria</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Celular</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Valor Contrato</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Valor Parcela</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Parcelas</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Liquidadas</th>
+                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Valor de Parcela</th>
+                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Prazo</th>
+                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Parcelas Liquidadas</th>
                                         <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Vencimento</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Dias</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Canal</th>
-                                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
                                       </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
@@ -257,20 +250,13 @@ export const VencimentoContratosPage: React.FC = () => {
                                         <tr key={contrato.id} className="hover:bg-gray-50 transition-colors">
                                           <td className="px-3 py-2 text-xs text-gray-900">{contrato.convenio.replace('Prefeitura de ', 'Pref. ')}</td>
                                           <td className="px-3 py-2 text-xs text-blue-600 font-medium">{contrato.numeroProposta}</td>
-                                          <td className="px-3 py-2 text-xs text-gray-600">{contrato.contratoExterno}</td>
+                                          <td className="px-3 py-2 text-xs text-gray-900">{contrato.nomeServidor}</td>
                                           <td className="px-3 py-2 text-xs text-gray-600">{contrato.cpf}</td>
                                           <td className="px-3 py-2 text-xs text-gray-600">{contrato.matricula}</td>
-                                          <td className="px-3 py-2 text-xs text-gray-900">{contrato.nomeServidor}</td>
-                                          <td className="px-3 py-2 text-xs text-gray-600">{contrato.categoria}</td>
-                                          <td className="px-3 py-2 text-xs text-gray-600">{contrato.celular}</td>
-                                          <td className="px-3 py-2 text-xs text-gray-900 font-medium">{formatCurrency(contrato.valorContrato)}</td>
                                           <td className="px-3 py-2 text-xs text-gray-900">{formatCurrency(contrato.valorParcela)}</td>
                                           <td className="px-3 py-2 text-xs text-gray-600">{contrato.qtdeTotalParcelas}x</td>
                                           <td className="px-3 py-2 text-xs text-green-600 font-medium">{contrato.qtdeParcelasLiquidadas}x</td>
                                           <td className="px-3 py-2 text-xs text-gray-600">{formatDate(contrato.vencimentoUltimaParcela)}</td>
-                                          <td className="px-3 py-2 text-xs text-gray-900 font-medium">{contrato.diasParaVencimento} dias</td>
-                                          <td className="px-3 py-2 text-xs text-gray-600">{contrato.canal}</td>
-                                          <td className="px-3 py-2 text-xs">{getStatusBadge(contrato.statusOportunidade)}</td>
                                         </tr>
                                       ))}
                                     </tbody>
