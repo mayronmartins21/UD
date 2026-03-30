@@ -10,15 +10,17 @@ import { DocumentosTab } from './tabs/DocumentosTab';
 interface ServidorDetalhesPageProps {
   servidor: ServidorCompleto;
   onVoltar: () => void;
+  propostaSelecionada?: string | null;
 }
 
 type Tab = 'dados-pessoais' | 'beneficio-saque' | 'cartao-compras' | 'planos' | 'documentos';
 
 export const ServidorDetalhesPage: React.FC<ServidorDetalhesPageProps> = ({
   servidor,
-  onVoltar
+  onVoltar,
+  propostaSelecionada
 }) => {
-  const [activeTab, setActiveTab] = useState<Tab>('dados-pessoais');
+  const [activeTab, setActiveTab] = useState<Tab>(propostaSelecionada ? 'beneficio-saque' : 'dados-pessoais');
 
   const tabs = [
     { id: 'dados-pessoais', label: 'Dados Pessoais' },
@@ -70,7 +72,7 @@ export const ServidorDetalhesPage: React.FC<ServidorDetalhesPageProps> = ({
 
         <div className="p-6">
           {activeTab === 'dados-pessoais' && <DadosPessoaisTab servidor={servidor} />}
-          {activeTab === 'beneficio-saque' && <BeneficioSaqueTab servidor={servidor} />}
+          {activeTab === 'beneficio-saque' && <BeneficioSaqueTab servidor={servidor} propostaSelecionada={propostaSelecionada} />}
           {activeTab === 'cartao-compras' && <CartaoComprasTab servidor={servidor} />}
           {activeTab === 'planos' && <PlanosTab servidor={servidor} />}
           {activeTab === 'documentos' && <DocumentosTab servidor={servidor} />}

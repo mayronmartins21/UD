@@ -7,12 +7,14 @@ import type { ServidorCompleto } from '../../types/servidores';
 
 interface ServidoresTabProps {
   cpfInicial?: string | null;
+  propostaInicial?: string | null;
 }
 
-export const ServidoresTab: React.FC<ServidoresTabProps> = ({ cpfInicial }) => {
+export const ServidoresTab: React.FC<ServidoresTabProps> = ({ cpfInicial, propostaInicial }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [servidorSelecionado, setServidorSelecionado] = useState<ServidorCompleto | null>(null);
+  const [propostaSelecionada, setPropostaSelecionada] = useState<string | null>(null);
   const itemsPerPage = 20;
 
   useEffect(() => {
@@ -20,9 +22,10 @@ export const ServidoresTab: React.FC<ServidoresTabProps> = ({ cpfInicial }) => {
       const servidor = servidoresMock.find(s => s.cpf === cpfInicial);
       if (servidor) {
         setServidorSelecionado(servidor);
+        setPropostaSelecionada(propostaInicial || null);
       }
     }
-  }, [cpfInicial]);
+  }, [cpfInicial, propostaInicial]);
 
   const servidoresFiltrados = useMemo(() => {
     return servidoresMock.filter(servidor => {
@@ -82,7 +85,11 @@ export const ServidoresTab: React.FC<ServidoresTabProps> = ({ cpfInicial }) => {
     return (
       <ServidorDetalhesPage
         servidor={servidorSelecionado}
-        onVoltar={() => setServidorSelecionado(null)}
+        onVoltar={() => {
+          setServidorSelecionado(null);
+          setPropostaSelecionada(null);
+        }}
+        propostaSelecionada={propostaSelecionada}
       />
     );
   }

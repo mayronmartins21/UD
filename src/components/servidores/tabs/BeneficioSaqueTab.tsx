@@ -7,10 +7,19 @@ import { logsExemplo } from '../../../data/logsMockData';
 
 interface BeneficioSaqueTabProps {
   servidor: ServidorCompleto;
+  propostaSelecionada?: string | null;
 }
 
-export const BeneficioSaqueTab: React.FC<BeneficioSaqueTabProps> = ({ servidor }) => {
-  const [operacaoSelecionada, setOperacaoSelecionada] = useState<OperacaoBeneficioSaque | null>(null);
+export const BeneficioSaqueTab: React.FC<BeneficioSaqueTabProps> = ({ servidor, propostaSelecionada }) => {
+  const [operacaoSelecionada, setOperacaoSelecionada] = useState<OperacaoBeneficioSaque | null>(() => {
+    if (propostaSelecionada) {
+      const operacao = servidor.beneficioSaqueDetalhes.operacoes.find(
+        op => op.numeroProposta === propostaSelecionada
+      );
+      return operacao || null;
+    }
+    return null;
+  });
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {

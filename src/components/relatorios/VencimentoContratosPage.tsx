@@ -4,7 +4,7 @@ import type { VencimentoContrato, VencimentoResumo } from '../../types/venciment
 import { gerarContratosVencimento, gerarResumoGrupos } from '../../data/vencimentoContratosMockData';
 
 interface VencimentoContratosPageProps {
-  onNavigateToServidor?: (cpf: string) => void;
+  onNavigateToServidor?: (cpf: string, numeroProposta: string) => void;
 }
 
 const convenios = [
@@ -123,9 +123,9 @@ export const VencimentoContratosPage: React.FC<VencimentoContratosPageProps> = (
     return contratosFiltrados.filter(c => c.faixaVencimento === faixaVencimento);
   };
 
-  const handleRowDoubleClick = (cpf: string) => {
+  const handleRowDoubleClick = (cpf: string, numeroProposta: string) => {
     if (onNavigateToServidor) {
-      onNavigateToServidor(cpf);
+      onNavigateToServidor(cpf, numeroProposta);
     }
   };
 
@@ -266,7 +266,7 @@ export const VencimentoContratosPage: React.FC<VencimentoContratosPageProps> = (
                                         <tr
                                           key={contrato.id}
                                           className="hover:bg-gray-50 transition-colors cursor-pointer"
-                                          onDoubleClick={() => handleRowDoubleClick(contrato.cpf)}
+                                          onDoubleClick={() => handleRowDoubleClick(contrato.cpf, contrato.numeroProposta)}
                                         >
                                           <td className="px-3 py-2 text-xs text-gray-900">{contrato.convenio.replace('Prefeitura de ', 'Pref. ')}</td>
                                           <td className="px-3 py-2 text-xs text-blue-600 font-medium">{contrato.numeroProposta}</td>

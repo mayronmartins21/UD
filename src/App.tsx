@@ -39,6 +39,7 @@ function App() {
   const [propostaEmAndamento, setPropostaEmAndamento] = useState(false);
   const [abaDesejada, setAbaDesejada] = useState<string | null>(null);
   const [servidorSelecionadoCpf, setServidorSelecionadoCpf] = useState<string | null>(null);
+  const [propostaSelecionada, setPropostaSelecionada] = useState<string | null>(null);
 
   const menuGroups: MenuGroup[] = [
     {
@@ -152,8 +153,9 @@ function App() {
     setAbaDesejada(null);
   };
 
-  const handleNavigateToServidor = (cpf: string) => {
+  const handleNavigateToServidor = (cpf: string, numeroProposta: string) => {
     setServidorSelecionadoCpf(cpf);
+    setPropostaSelecionada(numeroProposta);
     setActiveTab('servidores');
   };
 
@@ -181,7 +183,7 @@ function App() {
       case 'antecipacoes':
         return <AntecipacaoQuitacaoTab />;
       case 'servidores':
-        return <ServidoresTab cpfInicial={servidorSelecionadoCpf} />;
+        return <ServidoresTab cpfInicial={servidorSelecionadoCpf} propostaInicial={propostaSelecionada} />;
       case 'convenios':
         return <ConveniosTab />;
       case 'processadoras':
