@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
   Upload, BarChart3, GitMerge, Settings, Users, ChevronDown, ChevronRight,
   Home, Shield, User, Building, CreditCard, UserCheck, Calculator,
-  FileText, Umbrella, LogOut, Menu, X, DollarSign, Clock, Smartphone, Package
+  FileText, Umbrella, LogOut, Menu, X, DollarSign, Clock, Smartphone, Package,
+  XCircle, Unlock, TrendingUp
 } from 'lucide-react';
 import { UploadTab } from './components/upload/UploadTab';
 import { RepassesTab } from './components/repasses/RepassesTab';
@@ -92,7 +93,17 @@ function App() {
               name: 'Cartão Benefícios',
               icon: CreditCard,
               children: [
-                { id: 'saque-facil', name: 'Saque Fácil', icon: DollarSign },
+                { id: 'lancamentos', name: 'Lançamentos', icon: FileText },
+                { id: 'solicitacoes-cancelamentos', name: 'Solicitações e Cancelamentos', icon: XCircle },
+                { id: 'liberar-margem', name: 'Liberar Margem', icon: Unlock }
+              ]
+            },
+            {
+              id: 'saque-facil',
+              name: 'Saque Fácil',
+              icon: DollarSign,
+              children: [
+                { id: 'producao', name: 'Produção', icon: TrendingUp },
                 { id: 'vencimento-contratos', name: 'Vencimento de Contratos', icon: Clock }
               ]
             }
