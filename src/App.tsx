@@ -16,6 +16,7 @@ import { ServidoresTab } from './components/servidores/ServidoresTab';
 import { ConveniosTab } from './components/convenios/ConveniosTab';
 import { ProcessadorasTab } from './components/processadoras/ProcessadorasTab';
 import { VencimentoContratosPage } from './components/relatorios/VencimentoContratosPage';
+import { AplicativoTab } from './components/aplicativo/AplicativoTab';
 
 type TabType = 'upload' | 'repasses' | 'conciliacao' | string;
 
@@ -139,7 +140,7 @@ function App() {
       return;
     }
 
-    if (['upload', 'repasses', 'conciliacao', 'antecipacoes', 'dashboard-geral', 'servidores', 'convenios', 'processadoras', 'vencimento-contratos'].includes(itemId)) {
+    if (['upload', 'repasses', 'conciliacao', 'antecipacoes', 'dashboard-geral', 'servidores', 'convenios', 'processadoras', 'vencimento-contratos', 'relatorios-aplicativo'].includes(itemId)) {
       setActiveTab(itemId);
     } else if (['cadastro-cliente', 'mesa'].includes(itemId)) {
       setActiveTab(itemId);
@@ -151,7 +152,7 @@ function App() {
   const confirmarMudancaAba = () => {
     if (abaDesejada) {
       setPropostaEmAndamento(false);
-      if (['upload', 'repasses', 'conciliacao', 'antecipacoes', 'dashboard-geral', 'servidores', 'convenios', 'processadoras', 'vencimento-contratos'].includes(abaDesejada)) {
+      if (['upload', 'repasses', 'conciliacao', 'antecipacoes', 'dashboard-geral', 'servidores', 'convenios', 'processadoras', 'vencimento-contratos', 'relatorios-aplicativo'].includes(abaDesejada)) {
         setActiveTab(abaDesejada);
       } else if (['cadastro-cliente', 'mesa'].includes(abaDesejada)) {
         setActiveTab(abaDesejada);
@@ -201,6 +202,8 @@ function App() {
         return <ProcessadorasTab />;
       case 'vencimento-contratos':
         return <VencimentoContratosPage onNavigateToServidor={handleNavigateToServidor} />;
+      case 'relatorios-aplicativo':
+        return <AplicativoTab />;
       default:
         return <DashboardTab />;
     }
@@ -218,7 +221,8 @@ function App() {
       'servidores': 'Clientes',
       'convenios': 'Convênios',
       'processadoras': 'Processadoras',
-      'vencimento-contratos': 'Vencimento de Contratos'
+      'vencimento-contratos': 'Vencimento de Contratos',
+      'relatorios-aplicativo': 'Aplicativo'
     };
 
     return financialTabs[activeTab as keyof typeof financialTabs] || 'Sistema UseDigi';
@@ -239,6 +243,8 @@ function App() {
       return 'Administrativo → Processadoras';
     } else if (activeTab === 'vencimento-contratos') {
       return 'Gerencial → Relatórios → Cartão Benefícios → Vencimento de Contratos';
+    } else if (activeTab === 'relatorios-aplicativo') {
+      return 'Gerencial → Relatórios → Aplicativo';
     } else if (['upload', 'repasses', 'conciliacao', 'antecipacoes'].includes(activeTab)) {
       return 'Financeiro → ' + getCurrentPageTitle().replace('Dashboard de ', '');
     }
