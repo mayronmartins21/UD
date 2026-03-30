@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { 
+import {
   Upload, BarChart3, GitMerge, Settings, Users, ChevronDown, ChevronRight,
   Home, Shield, User, Building, CreditCard, UserCheck, Calculator,
-  FileText, Umbrella, LogOut, Menu, X, DollarSign
+  FileText, Umbrella, LogOut, Menu, X, DollarSign, Clock, Smartphone, Package
 } from 'lucide-react';
 import { UploadTab } from './components/upload/UploadTab';
 import { RepassesTab } from './components/repasses/RepassesTab';
@@ -14,6 +14,7 @@ import { DashboardTab } from './components/dashboard/DashboardTab';
 import { ServidoresTab } from './components/servidores/ServidoresTab';
 import { ConveniosTab } from './components/convenios/ConveniosTab';
 import { ProcessadorasTab } from './components/processadoras/ProcessadorasTab';
+import { VencimentoContratosPage } from './components/relatorios/VencimentoContratosPage';
 
 type TabType = 'upload' | 'repasses' | 'conciliacao' | string;
 
@@ -75,14 +76,33 @@ function App() {
       name: 'Gerencial',
       icon: FileText,
       items: [
-        { id: 'relatorios', name: 'Relatórios', icon: FileText },
+        {
+          id: 'relatorios',
+          name: 'Relatórios',
+          icon: FileText,
+          children: [
+            { id: 'relatorios-aplicativo', name: 'Aplicativo', icon: Smartphone },
+            { id: 'relatorios-seguros', name: 'Seguros', icon: Umbrella },
+            { id: 'relatorios-assinaturas', name: 'Assinaturas', icon: Package },
+            { id: 'relatorios-facajus', name: 'Façajus', icon: FileText },
+            {
+              id: 'cartao-beneficios',
+              name: 'Cartão Benefícios',
+              icon: CreditCard,
+              children: [
+                { id: 'saque-facil', name: 'Saque Fácil', icon: DollarSign },
+                { id: 'vencimento-contratos', name: 'Vencimento de Contratos', icon: Clock }
+              ]
+            }
+          ]
+        },
         { id: 'seguro-oferta', name: 'Seguro Oferta', icon: Umbrella }
       ]
     },
     {
       id: 'financeiro',
       name: 'Financeiro',
-      icon: BarChart3,
+      icon: DollarSign,
       items: [
         { id: 'upload', name: 'Upload', icon: Upload },
         { id: 'repasses', name: 'Repasses', icon: BarChart3 },
@@ -106,7 +126,7 @@ function App() {
       return;
     }
 
-    if (['upload', 'repasses', 'conciliacao', 'antecipacoes', 'dashboard-geral', 'servidores', 'convenios', 'processadoras'].includes(itemId)) {
+    if (['upload', 'repasses', 'conciliacao', 'antecipacoes', 'dashboard-geral', 'servidores', 'convenios', 'processadoras', 'vencimento-contratos'].includes(itemId)) {
       setActiveTab(itemId);
     } else if (['cadastro-cliente', 'mesa'].includes(itemId)) {
       setActiveTab(itemId);
@@ -118,7 +138,7 @@ function App() {
   const confirmarMudancaAba = () => {
     if (abaDesejada) {
       setPropostaEmAndamento(false);
-      if (['upload', 'repasses', 'conciliacao', 'antecipacoes', 'dashboard-geral', 'servidores', 'convenios', 'processadoras'].includes(abaDesejada)) {
+      if (['upload', 'repasses', 'conciliacao', 'antecipacoes', 'dashboard-geral', 'servidores', 'convenios', 'processadoras', 'vencimento-contratos'].includes(abaDesejada)) {
         setActiveTab(abaDesejada);
       } else if (['cadastro-cliente', 'mesa'].includes(abaDesejada)) {
         setActiveTab(abaDesejada);
@@ -160,6 +180,8 @@ function App() {
         return <ConveniosTab />;
       case 'processadoras':
         return <ProcessadorasTab />;
+      case 'vencimento-contratos':
+        return <VencimentoContratosPage />;
       default:
         return <DashboardTab />;
     }
@@ -176,7 +198,8 @@ function App() {
       'antecipacoes': 'Liquidação Antecipada',
       'servidores': 'Clientes',
       'convenios': 'Convênios',
-      'processadoras': 'Processadoras'
+      'processadoras': 'Processadoras',
+      'vencimento-contratos': 'Vencimento de Contratos'
     };
 
     return financialTabs[activeTab as keyof typeof financialTabs] || 'Sistema UseDigi';
@@ -195,6 +218,8 @@ function App() {
       return 'Administrativo → Convênios';
     } else if (activeTab === 'processadoras') {
       return 'Administrativo → Processadoras';
+    } else if (activeTab === 'vencimento-contratos') {
+      return 'Gerencial → Relatórios → Cartão Benefícios → Vencimento de Contratos';
     } else if (['upload', 'repasses', 'conciliacao', 'antecipacoes'].includes(activeTab)) {
       return 'Financeiro → ' + getCurrentPageTitle().replace('Dashboard de ', '');
     }
@@ -229,11 +254,53 @@ function App() {
         </div>
 
         {/* Menu Navigation */}
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-2 overflow-y-auto flex-1">
           {menuGroups.map((group) => {
             const Icon = group.icon;
             const isExpanded = expandedGroups.includes(group.id);
-            
+
+            const renderMenuItem = (item: MenuItem, level: number = 0) => {
+              const ItemIcon = item.icon;
+              const isActive = activeTab === item.id;
+              const hasChildren = item.children && item.children.length > 0;
+              const isItemExpanded = expandedGroups.includes(item.id);
+              const marginLeft = level * 16;
+
+              return (
+                <div key={item.id}>
+                  <button
+                    onClick={() => {
+                      if (hasChildren) {
+                        toggleGroup(item.id);
+                      } else {
+                        handleMenuClick(item.id);
+                      }
+                    }}
+                    className={`w-full flex items-center justify-between p-2 text-sm rounded-md transition-colors ${
+                      isActive
+                        ? 'bg-blue-100 text-blue-700 font-medium'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                    style={{ marginLeft: `${marginLeft}px` }}
+                  >
+                    <div className="flex items-center">
+                      <ItemIcon className="w-4 h-4 mr-2" />
+                      {item.name}
+                    </div>
+                    {hasChildren && (
+                      isItemExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />
+                    )}
+                  </button>
+
+                  {hasChildren && isItemExpanded && (
+                    <div className="mt-1 space-y-1">
+                      {item.children!.map((child) => renderMenuItem(child, level + 1))}
+                    </div>
+                  )}
+                </div>
+              );
+            };
+
             return (
               <div key={group.id}>
                 {/* Group Header */}
@@ -253,25 +320,7 @@ function App() {
                 {/* Group Items */}
                 {isExpanded && sidebarOpen && (
                   <div className="ml-8 mt-1 space-y-1">
-                    {group.items.map((item) => {
-                      const ItemIcon = item.icon;
-                      const isActive = activeTab === item.id;
-                      
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => handleMenuClick(item.id)}
-                          className={`w-full flex items-center p-2 text-sm rounded-md transition-colors ${
-                            isActive 
-                              ? 'bg-blue-100 text-blue-700 font-medium' 
-                              : 'text-gray-600 hover:bg-gray-100'
-                          }`}
-                        >
-                          <ItemIcon className="w-4 h-4 mr-2" />
-                          {item.name}
-                        </button>
-                      );
-                    })}
+                    {group.items.map((item) => renderMenuItem(item))}
                   </div>
                 )}
               </div>
