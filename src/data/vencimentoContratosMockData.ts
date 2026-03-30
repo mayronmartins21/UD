@@ -72,22 +72,35 @@ function gerarContratos(quantidade: number, faixaDias: { min: number; max: numbe
     const totalParcelas = [24, 36, 48, 60, 72, 84][Math.floor(Math.random() * 6)];
     const diasParaVencimento = Math.floor(Math.random() * (faixaDias.max - faixaDias.min + 1)) + faixaDias.min;
 
-    const percentualPago = Math.max(75, Math.random() * 25 + 75);
-    const parcelasLiquidadas = Math.floor((percentualPago / 100) * totalParcelas);
-
-    const valorParcela = Math.floor(Math.random() * 300) + 200;
-    const valorContrato = valorParcela * totalParcelas;
-
     let faixaVencimento: 'ate30' | 'ate60' | 'ate90' | 'acima90';
     if (diasParaVencimento <= 30) faixaVencimento = 'ate30';
     else if (diasParaVencimento <= 60) faixaVencimento = 'ate60';
     else if (diasParaVencimento <= 90) faixaVencimento = 'ate90';
     else faixaVencimento = 'acima90';
 
-    const vencimentoData = new Date();
-    vencimentoData.setDate(vencimentoData.getDate() + diasParaVencimento);
+    let parcelasRestantes: number;
+    if (faixaVencimento === 'ate30') {
+      parcelasRestantes = Math.floor(Math.random() * 2);
+    } else if (faixaVencimento === 'ate60') {
+      parcelasRestantes = Math.floor(Math.random() * 2) + 1;
+    } else if (faixaVencimento === 'ate90') {
+      parcelasRestantes = Math.floor(Math.random() * 2) + 2;
+    } else {
+      parcelasRestantes = Math.floor(Math.random() * 8) + 4;
+    }
 
-    const parcelasRestantes = totalParcelas - parcelasLiquidadas;
+    if (parcelasRestantes > totalParcelas - 1) {
+      parcelasRestantes = totalParcelas - 1;
+    }
+
+    const parcelasLiquidadas = totalParcelas - parcelasRestantes;
+
+    const vencimentoData = new Date();
+    vencimentoData.setMonth(vencimentoData.getMonth() + parcelasRestantes);
+
+    const valorParcela = Math.floor(Math.random() * 300) + 200;
+    const valorContrato = valorParcela * totalParcelas;
+
     const statusOportunidade = determinarStatusOportunidade(parcelasRestantes, totalParcelas);
 
     contratos.push({
