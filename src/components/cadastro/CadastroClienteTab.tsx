@@ -402,7 +402,6 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
           <VideoChamadaStep
             data={videoChamadaData}
             onChange={setVideoChamadaData}
-            onPrevious={handlePrevious}
           />
         );
       default:
