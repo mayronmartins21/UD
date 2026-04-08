@@ -8,6 +8,7 @@ interface CCBStepProps {
   clienteData: ClienteData;
   reservaData: ReservaData;
   onPrevious: () => void;
+  onNext?: () => void;
 }
 
 export const CCBStep: React.FC<CCBStepProps> = ({
@@ -15,7 +16,8 @@ export const CCBStep: React.FC<CCBStepProps> = ({
   onChange,
   clienteData,
   reservaData,
-  onPrevious
+  onPrevious,
+  onNext
 }) => {
   const [linkCopiado, setLinkCopiado] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -335,20 +337,12 @@ export const CCBStep: React.FC<CCBStepProps> = ({
         </button>
         
         {data.status === 'generated' && (
-          <div className="flex space-x-3">
-            <button
-              onClick={() => alert('Processo finalizado com sucesso!\n\nO contrato foi enviado ao cliente e está aguardando assinatura.')}
-              className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium"
-            >
-              Finalizar
-            </button>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
-            >
-              Novo Cadastro
-            </button>
-          </div>
+          <button
+            onClick={onNext}
+            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
+          >
+            Próximo: Vídeo Chamada
+          </button>
         )}
       </div>
     </div>

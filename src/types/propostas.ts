@@ -1,4 +1,4 @@
-export type EtapaProposta = 'simulador' | 'cadastro' | 'documentos' | 'reserva' | 'aprovacao' | 'ccb' | 'concluida';
+export type EtapaProposta = 'simulador' | 'cadastro' | 'documentos' | 'reserva' | 'aprovacao' | 'ccb' | 'video_chamada' | 'concluida';
 export type StatusProposta = 'em_andamento' | 'correcao_solicitada' | 'pendente_assinatura' | 'aprovada' | 'concluida';
 export type EtapaCorrecao = 'cadastro' | 'documentos' | 'reserva';
 export type StatusPagamento = 'pago' | 'devolvido' | 'pendente';
@@ -51,9 +51,10 @@ export const ETAPAS_LABELS: Record<EtapaProposta, string> = {
   simulador: 'Simulador',
   cadastro: 'Cadastro',
   documentos: 'Documentos',
-  reserva: 'Reserva',
+  reserva: 'Reserva e Análise',
   aprovacao: 'Em Aprovação',
   ccb: 'CCB',
+  video_chamada: 'Vídeo Chamada',
   concluida: 'Concluída'
 };
 
@@ -74,9 +75,8 @@ export const STATUS_PAGAMENTO_LABELS: Record<StatusPagamento, string> = {
 export const ETAPAS_ORDEM: EtapaProposta[] = [
   'simulador',
   'cadastro',
-  'documentos',
   'reserva',
-  'aprovacao',
   'ccb',
+  'video_chamada',
   'concluida'
 ];

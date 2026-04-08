@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { ProgressBar } from './ProgressBar';
 import { DadosClienteStep } from './DadosClienteStep';
-import { DocumentosStep } from './DocumentosStep';
 import { ReservaStep } from './ReservaStep';
 import { CCBStep } from './CCBStep';
 import { HistoricoPropostas } from './HistoricoPropostas';
 import { SimuladorStep } from './SimuladorStep';
-import { AprovacaoStep } from './AprovacaoStep';
+import { VideoChamadaStep, VideoChamadaData } from './VideoChamadaStep';
 import { BuscarPropostaUnificadoModal } from './BuscarPropostaUnificadoModal';
 import { ReapresentarDadosBancariosModal, DadosBancarios } from './ReapresentarDadosBancariosModal';
 import { AlertaCorrecao } from './AlertaCorrecao';
@@ -145,10 +144,9 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
   const [currentStep, setCurrentStep] = useState(1);
   const [simuladorData, setSimuladorData] = useState<SimuladorData>({} as SimuladorData);
   const [clienteData, setClienteData] = useState<ClienteData>({} as ClienteData);
-  const [documentos, setDocumentos] = useState<DocumentoData[]>([]);
   const [reservaData, setReservaData] = useState<ReservaData>({} as ReservaData);
   const [ccbData, setCCBData] = useState<CCBData>({ status: 'idle' });
-  const [aprovacaoData, setAprovacaoData] = useState<AprovacaoData>({ status: 'aguardando' });
+  const [videoChamadaData, setVideoChamadaData] = useState<VideoChamadaData>({ link: '', status: 'pendente' });
   const [showBuscarModal, setShowBuscarModal] = useState(false);
   const [showReapresentarModal, setShowReapresentarModal] = useState(false);
   const [propostaAtual, setPropostaAtual] = useState<PropostaComCorrecoes | null>(null);
@@ -196,28 +194,26 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
   const steps = [
     { number: 1, title: 'Simulador', description: 'Simulação de proposta' },
     { number: 2, title: 'Dados Pessoais', description: 'Informações pessoais e endereço' },
-    { number: 3, title: 'Documentos', description: 'Upload de documentos necessários' },
-    { number: 4, title: 'Reserva', description: 'Reserva de margem consignável' },
-    { number: 5, title: 'Em Aprovação', description: 'Análise interna da proposta' },
-    { number: 6, title: 'CCB', description: 'Geração do contrato digital' }
+    { number: 3, title: 'Reserva e Análise', description: 'Reserva de margem consignável' },
+    { number: 4, title: 'CCB', description: 'Geração do contrato digital' },
+    { number: 5, title: 'Vídeo chamada', description: 'Validação de identidade' }
   ];
 
   useEffect(() => {
     salvarProgressoAutomatico();
-  }, [currentStep, simuladorData, clienteData, documentos, reservaData]);
+  }, [currentStep, simuladorData, clienteData, reservaData]);
 
   useEffect(() => {
     const possuiDados =
       currentStep > 1 &&
-      ((clienteData && Object.keys(clienteData).length > 0) ||
-      documentos.length > 0);
+      (clienteData && Object.keys(clienteData).length > 0);
 
     setTemDadosPreenchidos(possuiDados);
 
     if (onPropostaEmAndamento) {
-      onPropostaEmAndamento(possuiDados && currentStep < 6);
+      onPropostaEmAndamento(possuiDados && currentStep < 5);
     }
-  }, [currentStep, simuladorData, clienteData, documentos, onPropostaEmAndamento]);
+  }, [currentStep, simuladorData, clienteData, onPropostaEmAndamento]);
 
   const salvarProgressoAutomatico = async () => {
     if (!propostaAtual) return;
@@ -226,21 +222,20 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
       const etapaMap = {
         1: 'simulador' as const,
         2: 'cadastro' as const,
-        3: 'documentos' as const,
-        4: 'reserva' as const,
-        5: 'aprovacao' as const,
-        6: 'ccb' as const
+        3: 'reserva' as const,
+        4: 'ccb' as const,
+        5: 'video_chamada' as const
       };
 
       await propostaService.salvarProgresso({
         numero_proposta: propostaAtual.numero_proposta,
         cpf_cliente: propostaAtual.cpf_cliente,
         nome_cliente: propostaAtual.nome_cliente,
-        etapa_atual: etapaMap[currentStep as keyof typeof etapaMap],
+        etapa_atual: etapaMap[currentStep as keyof typeof etapaMap] as any,
         status: propostaAtual.status,
         dados_simulador: simuladorData,
         dados_cadastro: clienteData,
-        dados_documentos: { documentos },
+        dados_documentos: {},
         dados_reserva: reservaData
       }, userId);
     } catch (error) {
@@ -249,29 +244,8 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
   };
 
   const handleNext = () => {
-    if (currentStep < 6) {
-      const novaEtapa = currentStep + 1;
-      const etapaMap = {
-        1: 'simulador' as const,
-        2: 'cadastro' as const,
-        3: 'documentos' as const,
-        4: 'reserva' as const,
-        5: 'aprovacao' as const,
-        6: 'ccb' as const
-      };
-
-      if (propostaAtual) {
-        const etapaAtualNome = etapaMap[currentStep as keyof typeof etapaMap];
-        const novaEtapaNome = etapaMap[novaEtapa as keyof typeof etapaMap];
-
-        if (propostaService.validarAvancoEtapa(etapaAtualNome, novaEtapaNome)) {
-          setCurrentStep(novaEtapa);
-        } else {
-          alert('Não é possível pular etapas. Complete a etapa atual antes de avançar.');
-        }
-      } else {
-        setCurrentStep(novaEtapa);
-      }
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
@@ -289,13 +263,12 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
   const handleAbrirProposta = (proposta: PropostaComCorrecoes) => {
     setPropostaAtual(proposta);
 
-    const etapaParaStep = {
+    const etapaParaStep: Record<string, number> = {
       'simulador': 1,
       'cadastro': 2,
-      'documentos': 3,
-      'reserva': 4,
-      'aprovacao': 5,
-      'ccb': 6
+      'reserva': 3,
+      'ccb': 4,
+      'video_chamada': 5
     };
 
     const stepInicial = etapaParaStep[proposta.etapa_atual];
@@ -337,10 +310,9 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
     const etapaMap: Record<number, string> = {
       1: 'simulador',
       2: 'cadastro',
-      3: 'documentos',
-      4: 'reserva',
-      5: 'aprovacao',
-      6: 'ccb'
+      3: 'reserva',
+      4: 'ccb',
+      5: 'video_chamada'
     };
     return etapaMap[currentStep] || 'simulador';
   };
@@ -349,24 +321,22 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
     if (!propostaAtual && temDadosPreenchidos) {
       const numeroProposta = `PROP-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
 
-      const etapaMap = {
-        1: 'simulador' as const,
-        2: 'cadastro' as const,
-        3: 'documentos' as const,
-        4: 'reserva' as const,
-        5: 'aprovacao' as const,
-        6: 'ccb' as const
+      const etapaMap: Record<number, 'simulador' | 'cadastro' | 'reserva' | 'ccb'> = {
+        1: 'simulador',
+        2: 'cadastro',
+        3: 'reserva',
+        4: 'ccb'
       };
 
       await propostaService.salvarProgresso({
         numero_proposta: numeroProposta,
         cpf_cliente: clienteData.cpf || simuladorData.cpf || '',
         nome_cliente: clienteData.nome || '',
-        etapa_atual: etapaMap[currentStep as keyof typeof etapaMap],
+        etapa_atual: etapaMap[currentStep] || 'simulador',
         status: 'em_andamento',
         dados_simulador: simuladorData,
         dados_cadastro: clienteData,
-        dados_documentos: { documentos },
+        dados_documentos: {},
         dados_reserva: reservaData
       }, userId);
     }
@@ -408,15 +378,6 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
         );
       case 3:
         return (
-          <DocumentosStep
-            documentos={documentos}
-            onChange={setDocumentos}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        );
-      case 4:
-        return (
           <ReservaStep
             data={reservaData}
             onChange={setReservaData}
@@ -425,24 +386,22 @@ export const CadastroClienteTab: React.FC<CadastroClienteTabProps> = ({
             onPrevious={handlePrevious}
           />
         );
-      case 5:
-        return (
-          <AprovacaoStep
-            data={aprovacaoData}
-            onChange={setAprovacaoData}
-            clienteData={clienteData}
-            reservaData={reservaData}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        );
-      case 6:
+      case 4:
         return (
           <CCBStep
             data={ccbData}
             onChange={setCCBData}
             clienteData={clienteData}
             reservaData={reservaData}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+          />
+        );
+      case 5:
+        return (
+          <VideoChamadaStep
+            data={videoChamadaData}
+            onChange={setVideoChamadaData}
             onPrevious={handlePrevious}
           />
         );
